@@ -11,8 +11,8 @@ install.bat / install.ps1      ← cài lệnh `sync-skills` (1 lần mỗi máy
 
 | Skill | Lệnh | Việc làm |
 |---|---|---|
-| `bat-dau-phien` | `/bat-dau-phien [repo\|project]` | Đầu phiên: đọc `AGENTS.md`, `PROJECT_HANDOFF.md`, mọi `CLAUDE.md` (kể cả repo liên quan), kiểm tra git, báo cáo trạng thái + việc tiếp theo. Chỉ đọc. |
-| `ket-thuc-phien` | `/ket-thuc-phien [ghi chú]` | Cuối phiên: cập nhật `CLAUDE.md` của project đã sửa, `PROJECT_HANDOFF.md`, `AGENTS.md` (khi đổi quy chuẩn). Không commit. |
+| `bat-dau-phien` | `/bat-dau-phien [solution\|project\|số]` | Đầu phiên: đọc tài liệu (`AGENTS.md`, `PROJECT_HANDOFF.md`, các `CLAUDE.md`), kiểm tra git, báo cáo trạng thái + việc tiếp theo. Hỗ trợ chọn phạm vi theo Solution (.sln/.slnx), từng Project hoặc số thứ tự (tương tự csbuild). Chỉ đọc. |
+| `ket-thuc-phien` | `/ket-thuc-phien [số\|project] [ghi chú]` | Cuối phiên: cập nhật `CLAUDE.md` của project đã sửa, `PROJECT_HANDOFF.md`, `AGENTS.md`. Hỗ trợ chọn project theo số thứ tự hoặc tên trước khi cập nhật. Không commit. |
 | `sync-skills` | `/sync-skills` | Chạy lệnh `sync-skills` để cập nhật skill trên máy. |
 
 ## Cài trên máy mới (1 lần)
