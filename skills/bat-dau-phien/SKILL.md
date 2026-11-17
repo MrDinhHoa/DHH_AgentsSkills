@@ -12,7 +12,7 @@ Mục tiêu: nắm lại toàn bộ trạng thái dự án từ tài liệu trư
 ## Bước 0 - Xác định phạm vi
 
 1. **Repo hiện tại** = `git rev-parse --show-toplevel` tại thư mục làm việc. Không phải git repo → dùng thư mục làm việc.
-2. **Repo liên quan**: nếu `AGENTS.md` của repo hiện tại có mục **"Repo liên quan"**, lấy danh sách tên thư mục trong đó; đường dẫn tương đối tính từ **thư mục cha** của repo hiện tại. Repo nào không có trên máy → bỏ qua và ghi chú trong báo cáo.
+2. **Repo liên quan**: nếu `AGENTS.md` của repo hiện tại có mục **"Repo liên quan"**, lấy danh sách tên repo trong đó và tìm từng repo theo thứ tự ở mục "Tìm repo liên quan" bên dưới.
 3. **Tham số** sau lệnh (nếu có):
    - Tên repo → chỉ đọc repo đó.
    - Tên project / thư mục → chỉ đọc `CLAUDE.md` của project đó + `AGENTS.md`, `PROJECT_HANDOFF.md` của repo chứa nó.
@@ -42,6 +42,19 @@ Tiếng Việt, gọn trong một màn hình:
 4. **Điểm cần chú ý**: tài liệu mâu thuẫn nhau, tài liệu lỗi thời so với git, việc ghi "chưa kiểm thử", repo liên quan không tìm thấy.
 
 Kết thúc bằng một câu hỏi: hôm nay muốn làm việc gì (gợi ý 2-3 việc ưu tiên nhất).
+
+## Tìm repo liên quan (đường dẫn có thể khác nhau giữa các máy)
+
+Với mỗi tên repo trong mục "Repo liên quan":
+1. `<thư mục cha của repo hiện tại>\<tên>` - nếu tồn tại thì dùng.
+2. Bảng ánh xạ riêng của máy `~\.agent-skills\paths.json` (không đồng bộ giữa các máy):
+   ```json
+   { "repos": { "01_PiExcel": "E:\\Work\\01_PiExcel" } }
+   ```
+   Có khóa trùng tên và thư mục tồn tại → dùng.
+3. Không tìm thấy → hỏi người dùng đường dẫn (hoặc bỏ qua repo đó và ghi chú trong báo cáo). Người dùng cho đường dẫn → đề nghị lưu vào `paths.json` (tạo file nếu chưa có, giữ nguyên các khóa khác) để lần sau tự tìm được.
+
+Không ghi đường dẫn tuyệt đối của máy vào `AGENTS.md` / tài liệu dùng chung - chỉ ghi **tên** repo.
 
 ## Thiết lập hệ thống tài liệu (chỉ khi người dùng đồng ý)
 

@@ -12,7 +12,7 @@ Nếu người dùng ghi thêm nội dung sau lệnh (vd. kết quả test thủ
 
 ## Bước 1 - Xác định phạm vi
 
-1. **Repo hiện tại** = `git rev-parse --show-toplevel`. **Repo liên quan** = danh sách trong mục "Repo liên quan" của `AGENTS.md` (nếu có), tính từ thư mục cha của repo hiện tại.
+1. **Repo hiện tại** = `git rev-parse --show-toplevel`. **Repo liên quan** = danh sách tên trong mục "Repo liên quan" của `AGENTS.md` (nếu có); tìm đường dẫn theo cùng thứ tự như skill `bat-dau-phien` (mục "Tìm repo liên quan": thư mục cha chung → `~\.agent-skills\paths.json` → hỏi người dùng). Không ghi đường dẫn tuyệt đối của máy vào tài liệu dùng chung.
 2. Với từng repo: `git status --short` và `git diff --stat` (cả staged).
 3. Kết hợp git với những gì đã làm trong hội thoại - kể cả việc chỉ rà soát / phát hiện lỗi mà không sửa code, và thay đổi đã commit giữa phiên.
 4. Ánh xạ mỗi thay đổi → project chứa nó (thư mục có file dự án: `.csproj`, `package.json`, `pyproject.toml`…). Nếu `AGENTS.md` / `CLAUDE.md` quy định một nhóm project dùng chung một `CLAUDE.md` → cập nhật file chung đó.
