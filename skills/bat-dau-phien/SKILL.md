@@ -3,7 +3,7 @@ name: bat-dau-phien
 description: Mở đầu phiên làm việc cho bất kỳ repo nào dùng hệ thống tài liệu AGENTS.md / PROJECT_HANDOFF.md / CLAUDE.md - đọc lại toàn bộ tài liệu (kể cả các repo liên quan), kiểm tra git, rồi tóm tắt trạng thái và việc tiếp theo. Dùng khi người dùng gõ /bat-dau-phien hoặc nói "bắt đầu phiên", "mở đầu phiên", "nắm lại dự án".
 ---
 
-<!-- Nguồn: repo agent-skills. Không sửa bản đã cài trong ~/.claude/skills hoặc ~/.gemini/config/skills - sửa trong repo rồi chạy `sync-skills`. -->
+<!-- Nguồn: repo DHH_AgentsSkills. Không sửa bản đã cài trong ~/.claude/skills hoặc ~/.gemini/config/skills - sửa trong repo rồi chạy `sync-skills`. -->
 
 # Bắt đầu phiên làm việc - nạp lại ngữ cảnh
 

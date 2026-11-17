@@ -3,7 +3,7 @@ name: ket-thuc-phien
 description: Cập nhật tài liệu cuối phiên làm việc cho bất kỳ repo nào dùng hệ thống tài liệu AGENTS.md / PROJECT_HANDOFF.md / CLAUDE.md - CLAUDE.md của từng project đã sửa, PROJECT_HANDOFF.md, và AGENTS.md khi đổi quy chuẩn. Dùng khi người dùng gõ /ket-thuc-phien hoặc nói "kết thúc phiên", "bàn giao phiên", "cập nhật handoff".
 ---
 
-<!-- Nguồn: repo agent-skills. Không sửa bản đã cài trong ~/.claude/skills hoặc ~/.gemini/config/skills - sửa trong repo rồi chạy `sync-skills`. -->
+<!-- Nguồn: repo DHH_AgentsSkills. Không sửa bản đã cài trong ~/.claude/skills hoặc ~/.gemini/config/skills - sửa trong repo rồi chạy `sync-skills`. -->
 
 # Kết thúc phiên làm việc - cập nhật tài liệu
 

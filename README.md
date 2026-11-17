@@ -1,4 +1,4 @@
-# agent-skills
+# DHH_AgentsSkills
 
 Skill và quy tắc dùng chung cho **Claude Code** và **Antigravity**, đồng bộ giữa các máy qua git.
 
@@ -18,7 +18,7 @@ install.bat / install.ps1      ← cài lệnh `sync-skills` (1 lần mỗi máy
 ## Cài trên máy mới (1 lần)
 
 ```powershell
-git clone https://github.com/<tài-khoản>/agent-skills.git "D:\01_WORKING\00_Agent Skills"
+git clone https://github.com/MrDinhHoa/DHH_AgentsSkills.git "D:\01_WORKING\00_Agent Skills"
 & "D:\01_WORKING\00_Agent Skills\install.bat"
 ```
 Có thể clone vào thư mục bất kỳ; nếu sau này **di chuyển thư mục repo**, chạy lại `install.bat` ở vị trí mới để lệnh `sync-skills` trỏ đúng chỗ.
@@ -54,7 +54,7 @@ Sửa quy tắc: sửa `rules\agent-skills-rules.md` → `sync-skills -NoPull` �
 
 | Thứ | Cách xử lý |
 |---|---|
-| Vị trí repo `agent-skills` | Clone ở đâu cũng được → chạy `install.bat` tại đó. Lệnh `sync-skills` nhớ vị trí; khối quy tắc tự điền vị trí thật (`{{AGENT_SKILLS_DIR}}`). |
+| Vị trí repo `DHH_AgentsSkills` | Clone ở đâu cũng được → chạy `install.bat` tại đó. Lệnh `sync-skills` nhớ vị trí; khối quy tắc tự điền vị trí thật (`{{AGENT_SKILLS_DIR}}`). |
 | Repo liên quan của một project | `AGENTS.md` chỉ ghi **tên** repo. Skill tìm: thư mục cha chung → `~\.agent-skills\paths.json` → hỏi và đề nghị lưu. |
 | `~\.agent-skills\paths.json` | Bảng ánh xạ **riêng từng máy**, không nằm trong repo: `{ "repos": { "<tên repo>": "<đường dẫn>" } }` |
 

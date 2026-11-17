@@ -1,6 +1,6 @@
 # ==============================================================
 # Cai dat lenh `sync-skills` toan cuc + dong bo skill lan dau
-# Chay 1 lan tren moi may (sau khi clone repo agent-skills).
+# Chay 1 lan tren moi may (sau khi clone repo DHH_AgentsSkills).
 # ==============================================================
 
 $ErrorActionPreference = 'Stop'

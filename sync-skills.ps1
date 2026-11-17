@@ -1,6 +1,6 @@
 # ==============================================================
 # sync-skills: dong bo skill dung chung cho Claude Code + Antigravity
-#   1. git pull repo agent-skills (bo qua bang -NoPull)
+#   1. git pull repo DHH_AgentsSkills (bo qua bang -NoPull)
 #   2. Copy skills\* vao:
 #        - $HOME\.claude\skills           (Claude Code)
 #        - $HOME\.gemini\config\skills    (Antigravity)
