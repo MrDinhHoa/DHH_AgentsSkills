@@ -27,6 +27,7 @@ install.bat / install.ps1      ← cài lệnh `sync-skills` (1 lần mỗi máy
 | Skill | Lệnh | Việc làm |
 |---|---|---|
 | `modern-csharp` | `/modern-csharp` | Viết C# hiện đại, tối ưu (C# 12/13), tương thích target framework, áp dụng các tính năng ngôn ngữ mới nhất. |
+| `wpf` | `/wpf` | Xây dựng và hiện đại hóa ứng dụng WPF (.NET & .NET Framework): XAML, Data Binding, Commands, ControlTemplates, ResourceDictionary, Dispatcher threading. |
 | `aspnet-core` | `/aspnet-core` | Kiến trúc ứng dụng ASP.NET Core: hosting, middleware, bảo mật, cấu hình, logging, DI theo chuẩn .NET mới nhất. |
 | `minimal-apis` | `/minimal-apis` | Thiết kế và hiện thực Minimal APIs: route groups, filters, handler endpoints gọn nhẹ cho microservice. |
 | `entity-framework-core` | `/entity-framework-core` | Thiết kế dữ liệu EF Core: modeling, migrations, tối ưu truy vấn LINQ, tracking, quan hệ dữ liệu hiệu năng cao. |
