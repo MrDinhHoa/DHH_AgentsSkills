@@ -52,6 +52,7 @@ Project chưa có `CLAUDE.md` → tạo mới theo cấu trúc của các `CLAUD
 - Sửa dòng **Thời gian cập nhật** thành ngày hôm nay.
 - Cập nhật **trạng thái build** nếu có build trong phiên.
 - Thêm một mục công việc của phiên (tiêu đề có ngày + tên agent: Claude Code / Antigravity), tóm tắt ngắn, trỏ sang `CLAUDE.md` project cho chi tiết.
+- **Lưu trữ phiên cũ**: nếu `AGENTS.md` (hoặc đầu `PROJECT_HANDOFF.md`) có quy ước giới hạn số phiên / file lưu trữ (vd. giữ 3 phiên gần nhất, phiên cũ chuyển sang `HANDOFF_ARCHIVE.md`), áp dụng ngay sau khi thêm mục phiên mới: chuyển **nguyên văn** các phiên vượt giới hạn (cũ nhất trước) sang cuối file lưu trữ. Không có quy ước → giữ nguyên.
 - Cập nhật **Việc cần làm tiếp theo**: bỏ việc đã xong, thêm/sắp xếp lại việc mới.
 
 ## Bước 4 - `AGENTS.md` (chỉ khi cần)
