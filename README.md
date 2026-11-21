@@ -8,6 +8,7 @@ rules\agent-skills-rules.md    ← quy tắc chung (cách quản lý skill), ch�
 sync-skills.ps1                ← git pull + cài skill + chèn quy tắc
 install.bat / install.ps1      ← cài lệnh `sync-skills` (1 lần mỗi máy)
 kiem-tra-may.bat / .ps1        ← kiểm tra máy trước khi cài công cụ agent (chỉ đọc)
+cai-agent-tools.bat / .ps1     ← cài Node portable, Gemini CLI, ripgrep, lệnh `codex` (không cần admin)
 ```
 
 ### 1. Quy trình làm việc & Quản lý phiên
@@ -98,6 +99,18 @@ Nhấp đúp `kiem-tra-may.bat` (không cần admin). Script **chỉ đọc**, k
 | Mạng | Proxy (IE / WinHTTP / `HTTPS_PROXY`); kết nối tới OpenAI, Google, Anthropic, npm, GitHub, nodejs.org |
 
 Kết quả lưu vào `kiem-tra-may.txt` trên Desktop. Chưa có repo trên máy đó: mở file `kiem-tra-may.ps1`, copy toàn bộ nội dung dán vào cửa sổ PowerShell.
+
+### Cài công cụ agent (không cần admin)
+
+Nhấp đúp `cai-agent-tools.bat`. Chạy lại nhiều lần được - thứ nào có rồi thì bỏ qua:
+
+1. **Node.js LTS** bản zip → `%LOCALAPPDATA%\Programs\nodejs`, thêm vào PATH người dùng.
+2. **npm global** → `%APPDATA%\npm`, thêm vào PATH người dùng.
+3. **Gemini CLI** (`npm i -g @google/gemini-cli`).
+4. **ripgrep** (winget, `--scope user`).
+5. **Lệnh `codex`**: copy `skills\dieu-phoi-agent\scripts\codex.cmd` vào `~\.local\bin` (dùng `codex.exe` trong extension Codex của Antigravity / VS Code).
+
+Xong: mở terminal mới → chạy `gemini` một lần để đăng nhập Google → `codex login status` để kiểm tra Codex.
 
 ## Cập nhật skill
 
