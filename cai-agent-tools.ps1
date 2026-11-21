@@ -1,6 +1,6 @@
 # Cai cong cu agent (Node.js portable, Gemini CLI, ripgrep, lenh codex) - KHONG can quyen admin.
 # Chay lai nhieu lan duoc: thu nao co roi thi bo qua.
-# Sau khi chay: mo terminal MOI, chay `gemini` 1 lan de dang nhap.
+# Sau khi chay: mo terminal MOI, chay `gemini` 1 lan va nhap Gemini API key.
 param(
   [string]$NodeDir = "$env:LOCALAPPDATA\Programs\nodejs",
   [switch]$ForceNode,      # cai Node du da co (dung de thu)
@@ -18,16 +18,32 @@ function Show-Err($m)  { Write-Host "[LOI]  $m" -ForegroundColor Red }
 function Update-SessionPath { $env:Path = [Environment]::GetEnvironmentVariable('Path','User') + ';' + [Environment]::GetEnvironmentVariable('Path','Machine') }
 function Add-UserPath($dir) {
   if ($NoPathChange) { $env:Path = "$dir;$env:Path"; return }
-  $cur = [Environment]::GetEnvironmentVariable('Path','User')
-  $parts = @($cur -split ';' | Where-Object { $_ })
-  if (-not ($parts | Where-Object { $_.TrimEnd('\') -ieq $dir.TrimEnd('\') })) {
-    [Environment]::SetEnvironmentVariable('Path', (($parts + $dir) -join ';'), 'User')
+  # Doc/ghi thang registry: giu nguyen cac muc %VAR% va kieu REG_EXPAND_SZ
+  # ([Environment]::SetEnvironmentVariable se ghi lai PATH da giai no, mat %VAR%).
+  $key = Get-Item 'HKCU:\Environment'
+  $raw = $key.GetValue('Path', '', 'DoNotExpandEnvironmentNames')
+  $parts = @($raw -split ';' | Where-Object { $_ })
+  $exists = $parts | Where-Object { [Environment]::ExpandEnvironmentVariables($_).TrimEnd('\') -ieq $dir.TrimEnd('\') }
+  if (-not $exists) {
+    Set-ItemProperty 'HKCU:\Environment' -Name Path -Value (($parts + $dir) -join ';') -Type ExpandString
+    # Bao cho Windows (Explorer, terminal moi) biet bien moi truong da doi
+    [Environment]::SetEnvironmentVariable('AGENT_TOOLS_REFRESH', '1', 'User')
+    [Environment]::SetEnvironmentVariable('AGENT_TOOLS_REFRESH', $null, 'User')
     Show-Ok "Them vao PATH nguoi dung: $dir"
   }
   Update-SessionPath
 }
 Update-SessionPath
 $failed = @()
+
+# 0. ExecutionPolicy cho user (npm.ps1, gemini.ps1 la script .ps1; mac dinh Restricted se bi chan)
+Show-Head "0. ExecutionPolicy"
+try {
+  if ((Get-ExecutionPolicy -Scope CurrentUser) -in @('Undefined','Restricted')) {
+    if (-not $NoPathChange) { Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force }
+    Show-Ok "CurrentUser -> RemoteSigned"
+  } else { Show-Skip "CurrentUser = $(Get-ExecutionPolicy -Scope CurrentUser)" }
+} catch { Show-Err "ExecutionPolicy (co the bi GPO khoa): $($_.Exception.Message)"; $failed += 'executionpolicy' }
 
 # 1. Node.js portable
 Show-Head "1. Node.js"
@@ -95,10 +111,28 @@ try {
   New-Item -ItemType Directory -Force $bin | Out-Null
   Copy-Item (Join-Path $repo 'skills\dieu-phoi-agent\scripts\codex.cmd') (Join-Path $bin 'codex.cmd') -Force
   Add-UserPath $bin
-  $v = & (Join-Path $bin 'codex.cmd') --version 2>&1
+  # PS 5.1: EAP=Stop + 2>&1 bien moi dong stderr (vd. canh bao) thanh loi dung -> tam ha EAP
+  $ErrorActionPreference = 'Continue'
+  try { $v = & (Join-Path $bin 'codex.cmd') --version 2>&1 | ForEach-Object { "$_" } } finally { $ErrorActionPreference = 'Stop' }
   if ($LASTEXITCODE -ne 0) { throw "$v" }
   Show-Ok "codex -> $v"
 } catch { Show-Err "codex: $($_.Exception.Message)"; $failed += 'codex' }
+
+# 6. Antigravity CLI (agy) - dung goi Google AI Pro/Ultra (Gemini CLI khong con nhan tai khoan ca nhan)
+Show-Head "6. Antigravity CLI (agy)"
+try {
+  $agyExe = Join-Path $env:LOCALAPPDATA 'agy\bin\agy.exe'
+  if ((Get-Command agy -ErrorAction SilentlyContinue) -or (Test-Path $agyExe)) { Show-Skip "Da co agy" }
+  else {
+    $tmp = Join-Path $env:TEMP 'agent-tools-agy'
+    New-Item -ItemType Directory -Force $tmp | Out-Null
+    Invoke-WebRequest 'https://antigravity.google/cli/install.ps1' -OutFile "$tmp\install.ps1" -UseBasicParsing
+    & powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$tmp\install.ps1"
+    Remove-Item $tmp -Recurse -Force
+    if (-not (Test-Path $agyExe)) { throw "khong thay $agyExe sau khi cai" }
+    Show-Ok "agy -> $agyExe"
+  }
+} catch { Show-Err "agy: $($_.Exception.Message)"; $failed += 'agy' }
 
 Show-Head "KET QUA"
 if ($failed) { Show-Err "Loi o: $($failed -join ', ') - xem thong bao phia tren." } else { Show-Ok "Xong tat ca." }
@@ -106,6 +140,10 @@ Write-Host @"
 
 Tiep theo:
   1. Dong terminal nay, mo terminal MOI (de nhan PATH moi).
-  2. Chay:  gemini           -> dang nhap Google lan dau (chon 'Login with Google'), xong go /quit
+  2. Lay API key tai https://aistudio.google.com/apikey
+     Chay:  gemini   -> chon 'Use Gemini API Key', dan key, xong go /quit
+     (Dang nhap bang tai khoan Google khong con ho tro cho Gemini CLI ca nhan.)
   3. Kiem tra: codex login status
+  4. Chay:  agy   -> dang nhap Google (tai khoan co goi AI Pro/Ultra), xong thoat.
+     (Neu da dang nhap Antigravity IDE thi co the agy da dung chung, khong can.)
 "@ -ForegroundColor Cyan

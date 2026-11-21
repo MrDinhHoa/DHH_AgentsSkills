@@ -18,7 +18,7 @@ $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIden
 Write-Host "Dang chay quyen admin: $isAdmin"
 
 Show-Head "1. PHAN MEM"
-foreach ($c in 'node','npm','git','winget','gemini','codex','claude','rg') {
+foreach ($c in 'node','npm','git','winget','gemini','codex','agy','claude','rg') {
   $x = Get-Command $c -ErrorAction SilentlyContinue
   if ($x) {
     $v = try { & $c --version 2>$null | Select-Object -First 1 } catch { '?' }
@@ -32,6 +32,7 @@ $codexExt = foreach ($r in "$env:USERPROFILE\.antigravity-ide\extensions","$env:
   if (Test-Path $r) { Get-ChildItem $r -Directory -Filter 'openai.chatgpt-*' -ErrorAction SilentlyContinue | ForEach-Object { Get-ChildItem $_.FullName -Recurse -Filter 'codex.exe' -ErrorAction SilentlyContinue } }
 }
 if ($codexExt) { $codexExt | ForEach-Object { Show-Ok "codex.exe trong extension: $($_.FullName)" } } else { Show-No "Extension Codex (openai.chatgpt) trong Antigravity / VS Code" }
+if (Test-Path "$env:LOCALAPPDATA\agy\bin\agy.exe") { Show-Ok "agy.exe: $env:LOCALAPPDATA\agy\bin\agy.exe" } else { Show-No "Antigravity CLI (agy)" }
 if (Test-Path "$env:USERPROFILE\.codex\auth.json") { Show-Ok "Codex da dang nhap (~\.codex\auth.json)" } else { Show-No "Codex chua dang nhap" }
 
 Show-Head "2. PATH NGUOI DUNG"

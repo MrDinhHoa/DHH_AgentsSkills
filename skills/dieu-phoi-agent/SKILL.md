@@ -1,21 +1,53 @@
 ---
 name: dieu-phoi-agent
-description: Điều phối Codex CLI (OpenAI) và Gemini CLI (Google) làm agent phụ chạy headless - giao việc, chạy song song trong worktree riêng, review chéo, nghiệm thu và gộp kết quả. Dùng khi người dùng gõ /dieu-phoi-agent, hoặc nhờ "giao cho Codex", "nhờ Gemini", "cho Codex/Gemini review", "chạy song song nhiều agent", "lấy ý kiến thứ hai".
+description: Điều phối Codex CLI (OpenAI), Antigravity CLI agy và Gemini CLI (Google) làm agent phụ chạy headless - giao việc, chạy song song trong worktree riêng, review chéo, nghiệm thu và gộp kết quả. Dùng khi người dùng gõ /dieu-phoi-agent <project> <review|sua|hoi> <codex|agy|gemini|ca-hai|tu-chia>: <việc> [xong khi: <tiêu chí>], hoặc nhờ "giao cho Codex", "nhờ Gemini / Antigravity / agy", "cho Codex/Gemini review", "chạy song song nhiều agent", "lấy ý kiến thứ hai".
+argument-hint: "<project> <review|sua|hoi> <codex|agy|gemini|ca-hai|tu-chia>: <việc> [xong khi: <tiêu chí>]"
 ---
 
 # Điều phối Codex & Gemini
 
 Bạn (agent chính) là **người điều phối**: chia việc, viết đề bài, gọi agent phụ qua dòng lệnh, rồi **tự kiểm tra** kết quả trước khi báo người dùng. Agent phụ không thấy hội thoại hiện tại - đề bài phải tự đủ ngữ cảnh.
 
+## Cú pháp
+
+```
+/dieu-phoi-agent <project> <chế độ> <ai>: <việc cần làm> [xong khi: <tiêu chí>]
+```
+
+| Phần | Giá trị | Thiếu thì |
+|---|---|---|
+| `<project>` | Tên repo / thư mục (tìm theo thư mục cha chung, rồi `~\.agent-skills\paths.json`) | Hỏi lại người dùng |
+| `<chế độ>` | `review` - chỉ đọc, báo lỗi · `sua` - sửa code trong worktree · `hoi` - hỏi ý kiến, so sánh câu trả lời | `review` |
+| `<ai>` | `codex` · `agy` (Antigravity CLI, gói Google AI Pro) · `gemini` (Gemini CLI, API key) · `ca-hai` (Codex + phía Google: `agy` nếu có, không thì `gemini`) · `tu-chia` (agent chính tự chia việc) | `ca-hai` |
+| `<việc cần làm>` | Mô tả cụ thể, có thể kèm file / thư mục | Bắt buộc - thiếu thì hỏi |
+| `xong khi:` | `build pass`, `test pass`, hành vi mong muốn | Tự đặt tiêu chí hợp lý và nói rõ với người dùng |
+
+Ví dụ:
+
+```
+/dieu-phoi-agent DHH_AgentsSkills review ca-hai: kiểm tra cai-agent-tools.ps1
+/dieu-phoi-agent QLDA sua codex: sửa lỗi null khi lưu hợp đồng ở ContractService.cs xong khi: dotnet test pass
+/dieu-phoi-agent QLDA sua tu-chia: Codex thêm API xuất Excel, Gemini viết test cho API đó xong khi: build + test pass
+/dieu-phoi-agent QLDA hoi ca-hai: nên dùng Dapper hay EF Core cho màn hình báo cáo?
+```
+
+Người dùng nói tự nhiên (không theo cú pháp) vẫn xử lý bình thường - suy ra các phần trên, chỉ hỏi lại phần thiếu mà không suy ra được.
+
+Chế độ `sua`: worktree tạo từ commit mới nhất → thay đổi **chưa commit** agent phụ không thấy. Có thay đổi chưa commit liên quan → nhắc người dùng commit trước, hoặc chuyển sang `review`.
+
 ## 0. Kiểm tra công cụ (đầu mỗi phiên dùng skill)
 
 ```powershell
 codex --version; codex login status
+agy --version        # Antigravity CLI (%LOCALAPPDATA%\agy\bin)
 gemini --version
 ```
 
+- **`agy` chưa có**: `irm https://antigravity.google/cli/install.ps1 | iex` (cài vào `%LOCALAPPDATA%\agy\bin`, không cần admin; nên tải script về đọc trước khi chạy). Đăng nhập: chạy `agy` một lần (tài khoản Google có AI Pro/Ultra); đã đăng nhập Antigravity IDE thì thường dùng chung, không cần.
+
 - **`codex` không có trong PATH** nhưng đã cài extension Codex (`openai.chatgpt`) trong Antigravity / VS Code: copy `scripts\codex.cmd` của skill này vào một thư mục có trong PATH (vd. `~\.local\bin`). Script tự tìm `codex.exe` kèm extension, bản mới nhất. Đăng nhập dùng chung với extension (`~\.codex\auth.json`).
-- **Chưa có gì cả**: Codex → cài extension Codex, hoặc `npm i -g @openai/codex`; Gemini → `npm i -g @google/gemini-cli` (cần Node.js). Cả hai cài được **không cần quyền admin** (npm global mặc định nằm trong `%APPDATA%\npm`; Node có bản zip portable). Lần đầu chạy `codex login` / `gemini` ở chế độ tương tác để đăng nhập - việc này người dùng tự làm.
+- **Chưa có gì cả**: Codex → cài extension Codex, hoặc `npm i -g @openai/codex`; Gemini → `npm i -g @google/gemini-cli` (cần Node.js). Cả hai cài được **không cần quyền admin** (npm global mặc định nằm trong `%APPDATA%\npm`; Node có bản zip portable). Lần đầu chạy `codex login` / `gemini` ở chế độ tương tác để đăng nhập - việc này người dùng tự làm. Gemini CLI chỉ còn dùng **API key** (aistudio.google.com/apikey, chọn "Use Gemini API Key"): từ 18/6/2026 Gemini CLI ngừng phục vụ tài khoản cá nhân (Free / AI Pro / AI Ultra) - những tài khoản này dùng **`agy`**.
+- **Chi phí**: Codex đăng nhập ChatGPT → trừ hạn mức gói ChatGPT; `agy` → trừ hạn mức gói Google AI Pro/Ultra; Gemini API key → gói miễn phí nếu project chưa bật thanh toán, ngược lại tính tiền theo token; phần điều phối/kiểm chứng tính vào agent chính.
 - Antigravity IDE **không** điều khiển được từ dòng lệnh (lệnh `antigravity-ide chat` đã thử, không mở được agent). Muốn phối hợp với agent trong IDE thì qua file (task/handoff), người dùng tự mở.
 
 ## 1. Khi nào giao, giao cho ai
@@ -53,7 +85,30 @@ Get-Content <task.md> -Raw | codex exec -s workspace-write -C <worktree> -o <k�
 - `-m <model>` để chọn model; mặc định theo `~\.codex\config.toml`.
 - **Không** dùng `-s danger-full-access` hay `--dangerously-bypass-approvals-and-sandbox`.
 
+### Antigravity CLI (`agy`)
+
+```powershell
+[Console]::OutputEncoding = [Text.Encoding]::UTF8
+$OutputEncoding = New-Object Text.UTF8Encoding $false     # bắt buộc: stdin sang agy là UTF-8
+
+# Chỉ đọc - đề bài qua stdin, kết quả JSON
+Set-Location <thư mục>
+$out = Get-Content <task.md> -Raw -Encoding UTF8 | agy --mode plan --output-format json --print-timeout 15m 2>$null
+$j = ($out -join "`n") | ConvertFrom-Json      # các trường: status, response, denied_actions, usage
+$j.response
+```
+
+- **Đề bài luôn qua stdin**, không truyền bằng `-p "<đề bài>"`: PowerShell 5.1 truyền dấu `"` trong tham số sai → agy báo `unexpected argument` (exit 2).
+- Không có cờ thư mục làm việc → `Set-Location` trước khi gọi. `--model <slug>` (xem `agy models`), `--effort low|medium|high|xhigh|max`.
+- **Giới hạn quan trọng**: ở headless, mọi lệnh shell bị **tự động từ chối** (exit 0 nhưng `response` rỗng, `denied_actions` có `command`; rule `permissions.allow` dạng `command(cat)` chưa thấy khớp). Vì vậy:
+  - **review / hoi**: dán sẵn nội dung file hoặc `git diff` vào đề bài + dặn "không cần chạy lệnh". Đã kiểm chứng chạy tốt.
+  - **sua**: cần `--dangerously-skip-permissions` (tự duyệt mọi lệnh) - chỉ dùng trong worktree cách ly **và khi người dùng cho phép rõ ràng**; công cụ điều phối có thể chặn cờ này. Không được phép → giao việc sửa cho Codex.
+- Luôn kiểm tra `response` khác rỗng và `denied_actions` trước khi coi là xong.
+- Chậm hơn Codex nhiều (review 2 file: ~6 phút, ~67k token) - đặt timeout rộng.
+
 ### Gemini (`gemini -p`)
+
+Chỉ dùng khi có Gemini **API key** (tài khoản cá nhân không đăng nhập được nữa - dùng `agy`).
 
 Chạy với thư mục hiện tại là thư mục làm việc (đổi bằng `Set-Location` / `-C` của shell, hoặc `--include-directories`).
 

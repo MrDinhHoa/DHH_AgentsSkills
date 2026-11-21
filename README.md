@@ -17,7 +17,7 @@ cai-agent-tools.bat / .ps1     ← cài Node portable, Gemini CLI, ripgrep, lệ
 | `bat-dau-phien` | `/bat-dau-phien [solution\|project\|số]` | Đầu phiên: đọc tài liệu (`AGENTS.md`, `PROJECT_HANDOFF.md`, các `CLAUDE.md`), kiểm tra git, báo cáo trạng thái + việc tiếp theo. Hỗ trợ chọn phạm vi theo Solution (.sln/.slnx), từng Project hoặc số thứ tự (tương tự csbuild). Chỉ đọc. |
 | `ket-thuc-phien` | `/ket-thuc-phien [số\|project] [ghi chú]` | Cuối phiên: cập nhật `CLAUDE.md` của project đã sửa, `PROJECT_HANDOFF.md`, `AGENTS.md`. Hỗ trợ chọn project theo số thứ tự hoặc tên trước khi cập nhật. Không commit. |
 | `sync-skills` | `/sync-skills` | Chạy lệnh `sync-skills` để cập nhật skill trên máy. |
-| `dieu-phoi-agent` | `/dieu-phoi-agent` | Điều phối Codex CLI và Gemini CLI làm agent phụ chạy headless: giao việc, chạy song song trong worktree riêng, review chéo, nghiệm thu và gộp kết quả. Kèm `scripts\codex.cmd` tạo lệnh `codex` từ `codex.exe` trong extension Codex của Antigravity / VS Code. |
+| `dieu-phoi-agent` | `/dieu-phoi-agent <project> <review\|sua\|hoi> <codex\|agy\|gemini\|ca-hai\|tu-chia>: <việc> [xong khi: <tiêu chí>]` | Điều phối Codex CLI, Antigravity CLI (`agy`, gói Google AI Pro) và Gemini CLI (API key) làm agent phụ chạy headless: giao việc, chạy song song trong worktree riêng, review chéo, nghiệm thu và gộp kết quả. Kèm `scripts\codex.cmd` tạo lệnh `codex` từ `codex.exe` trong extension Codex của Antigravity / VS Code. |
 | `find-skills` | `/find-skills` | Hỗ trợ tìm kiếm, tra cứu và đề xuất kỹ năng từ hệ sinh thái mở skills.sh và GitHub. Nguồn: `vercel-labs/skills`. |
 
 ### 2. Thiết kế UI/UX & Frontend
@@ -109,8 +109,12 @@ Nhấp đúp `cai-agent-tools.bat`. Chạy lại nhiều lần được - thứ 
 3. **Gemini CLI** (`npm i -g @google/gemini-cli`).
 4. **ripgrep** (winget, `--scope user`).
 5. **Lệnh `codex`**: copy `skills\dieu-phoi-agent\scripts\codex.cmd` vào `~\.local\bin` (dùng `codex.exe` trong extension Codex của Antigravity / VS Code).
+6. **Antigravity CLI (`agy`)**: trình cài chính chủ `antigravity.google/cli/install.ps1` → `%LOCALAPPDATA%\agy\bin`. Dùng gói Google AI Pro/Ultra.
 
-Xong: mở terminal mới → chạy `gemini` một lần để đăng nhập Google → `codex login status` để kiểm tra Codex.
+Bước 0 đặt ExecutionPolicy `CurrentUser` = `RemoteSigned` nếu đang `Undefined`/`Restricted` (để chạy được `npm.ps1`, `gemini.ps1`).
+
+Xong: mở terminal mới → lấy API key tại [aistudio.google.com/apikey](https://aistudio.google.com/apikey) → chạy `gemini`, chọn **Use Gemini API Key**, dán key → `codex login status` để kiểm tra Codex.
+Gemini CLI **không còn** cho đăng nhập bằng tài khoản Google cá nhân (báo "migrate to Antigravity"). Project chứa key chưa bật thanh toán = gói miễn phí (hết lượt thì báo lỗi, không mất tiền).
 
 ## Cập nhật skill
 
