@@ -7,6 +7,7 @@ skills\<tên>\SKILL.md          ← các skill
 rules\agent-skills-rules.md    ← quy tắc chung (cách quản lý skill), chèn vào file hướng dẫn toàn cục
 sync-skills.ps1                ← git pull + cài skill + chèn quy tắc
 install.bat / install.ps1      ← cài lệnh `sync-skills` (1 lần mỗi máy)
+kiem-tra-may.bat / .ps1        ← kiểm tra máy trước khi cài công cụ agent (chỉ đọc)
 ```
 
 ### 1. Quy trình làm việc & Quản lý phiên
@@ -15,6 +16,7 @@ install.bat / install.ps1      ← cài lệnh `sync-skills` (1 lần mỗi máy
 | `bat-dau-phien` | `/bat-dau-phien [solution\|project\|số]` | Đầu phiên: đọc tài liệu (`AGENTS.md`, `PROJECT_HANDOFF.md`, các `CLAUDE.md`), kiểm tra git, báo cáo trạng thái + việc tiếp theo. Hỗ trợ chọn phạm vi theo Solution (.sln/.slnx), từng Project hoặc số thứ tự (tương tự csbuild). Chỉ đọc. |
 | `ket-thuc-phien` | `/ket-thuc-phien [số\|project] [ghi chú]` | Cuối phiên: cập nhật `CLAUDE.md` của project đã sửa, `PROJECT_HANDOFF.md`, `AGENTS.md`. Hỗ trợ chọn project theo số thứ tự hoặc tên trước khi cập nhật. Không commit. |
 | `sync-skills` | `/sync-skills` | Chạy lệnh `sync-skills` để cập nhật skill trên máy. |
+| `dieu-phoi-agent` | `/dieu-phoi-agent` | Điều phối Codex CLI và Gemini CLI làm agent phụ chạy headless: giao việc, chạy song song trong worktree riêng, review chéo, nghiệm thu và gộp kết quả. Kèm `scripts\codex.cmd` tạo lệnh `codex` từ `codex.exe` trong extension Codex của Antigravity / VS Code. |
 | `find-skills` | `/find-skills` | Hỗ trợ tìm kiếm, tra cứu và đề xuất kỹ năng từ hệ sinh thái mở skills.sh và GitHub. Nguồn: `vercel-labs/skills`. |
 
 ### 2. Thiết kế UI/UX & Frontend
@@ -83,6 +85,19 @@ git clone https://github.com/MrDinhHoa/DHH_AgentsSkills.git "D:\01_WORKING\00_Ag
 ```
 Có thể clone vào thư mục bất kỳ; nếu sau này **di chuyển thư mục repo**, chạy lại `install.bat` ở vị trí mới để lệnh `sync-skills` trỏ đúng chỗ.
 `install` tạo lệnh `sync-skills` trong `~\.local\bin` (thêm vào PATH nếu chưa có), cài skill và chèn quy tắc chung lần đầu.
+
+### Kiểm tra máy (máy công ty / không có quyền admin)
+
+Nhấp đúp `kiem-tra-may.bat` (không cần admin). Script **chỉ đọc**, kiểm tra:
+
+| Mục | Nội dung |
+|---|---|
+| Phần mềm | `node`, `npm`, `git`, `winget`, `gemini`, `codex`, `claude`, `rg`; VS Code / Antigravity; `codex.exe` trong extension Codex; Codex đã đăng nhập chưa |
+| PATH | `~\.local\bin`, `%APPDATA%\npm` có trong PATH người dùng; ghi được vào `%APPDATA%\npm` không (để `npm i -g` không cần admin) |
+| Chính sách | Execution policy; có bị chặn chạy `.exe` trong thư mục người dùng không (AppLocker...) |
+| Mạng | Proxy (IE / WinHTTP / `HTTPS_PROXY`); kết nối tới OpenAI, Google, Anthropic, npm, GitHub, nodejs.org |
+
+Kết quả lưu vào `kiem-tra-may.txt` trên Desktop. Chưa có repo trên máy đó: mở file `kiem-tra-may.ps1`, copy toàn bộ nội dung dán vào cửa sổ PowerShell.
 
 ## Cập nhật skill
 
